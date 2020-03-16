@@ -18,17 +18,21 @@ AInteractableObject::AInteractableObject()
 Interaction Details
 ====================================================================================================
 */
-bool AInteractableObject::GetCanInteract()
+void AInteractableObject::OnInteract(APawn* interactingPlayer)
 {
-	return this->canInteract;
+	if (canInteract)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Is Interacting With: %s"), *this->GetName());
+		this->OnEngage(interactingPlayer);
+	}
 }
 
-void AInteractableObject::OnInteract(AActor* interactingPlayer)
+void AInteractableObject::OnEngage(APawn* interactingPlayer)
 {
 	this->canInteract = false;
 }
 
-void AInteractableObject::OnDisengage()
+void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 {
 	this->canInteract = true;
 }

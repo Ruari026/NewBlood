@@ -22,16 +22,30 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Inherited Interaction Behaviour
-	virtual void OnInteract(AActor* interactingPlayer) override;
-	virtual void OnDisengage() override;
-
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Inherited Interaction Behaviour
+	virtual void OnEngage(APawn* interactingPlayer) override;
+	virtual void OnDisengage(APawn* interactingPlayer) override;
+
 private:
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* weaponMesh;
+
 	// Weapon Interaction Behaviour
-	class UStaticMeshComponent* weaponMesh;
-	TArray<FString> weaponFingerPrints;
+	FVector startPos;
+	FVector targetPos;
+
+	// Weapon Details
+	UPROPERTY(EditAnywhere)
+		FString weaponName;
+	UPROPERTY(EditAnywhere)
+		FString weaponDamageType;
+
+	// Weapon Details UI
+	class UWeaponDetailsWidget* detailsWidgetInstance;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UWeaponDetailsWidget> detailsWidgetBP;
 };

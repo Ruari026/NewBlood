@@ -5,6 +5,12 @@
 
 #include "Components/StaticMeshComponent.h"
 
+#include "NewBloodCharacter.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+
+#include "WeaponDetailsWidget.h"
+
 // Sets default values
 AInteractableWeapon::AInteractableWeapon()
 {
@@ -19,10 +25,70 @@ void AInteractableWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	startPos = this->GetActorLocation();
+	targetPos = this->GetActorLocation();
 }
 
 // Called every frame
 void AInteractableWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	FVector newPos = FMath::Lerp(this->GetActorLocation(), targetPos, DeltaTime);
+
+}
+
+
+/*
+====================================================================================================
+Interaction Behaviour
+====================================================================================================
+*/
+void AInteractableWeapon::OnEngage(APawn* interactingPlayer)
+{
+	Super::OnEngage(interactingPlayer);
+
+	// Disables Player Movement & Enables UI Interaction
+	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
+	if (playerCharacter != nullptr)
+	{
+		playerCharacter->SetPlayerControlMode(false);
+	}
+
+	// Gets The Interacting Player Controller And Adds UI For Showing The Weapon Details
+	APlayerController* playerController = Cast<APlayerController>(interactingPlayer->GetController());
+	if (playerController != nullptr)
+	{
+		if (detailsWidgetBP != nullptr)
+		{
+			detailsWidgetInstance = CreateWidget<UWeaponDetailsWidget>(GetWorld(), detailsWidgetBP);
+			if (detailsWidgetInstance != nullptr)
+			{
+				// Setting the UI to show this specific weapon's information
+				detailsWidgetInstance->targetWeapon = this;
+				detailsWidgetInstance->SetWidgetDetails(this->weaponName, this->weaponDamageType);
+
+				// Showing UI to player
+				detailsWidgetInstance->AddToViewport();
+			}
+		}
+	}
+}
+
+void AInteractableWeapon::OnDisengage(APawn* interactingPlayer)
+{
+	Super::OnDisengage(interactingPlayer);
+
+	// Removes Weapon Details UI
+	if (detailsWidgetInstance != nullptr)
+	{
+		detailsWidgetInstance->RemoveFromParent();
+	}
+
+	// Disables Player Movement & Enables UI Interaction
+	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
+	if (playerCharacter != nullptr)
+	{
+		playerCharacter->SetPlayerControlMode(true);
+	}
 }

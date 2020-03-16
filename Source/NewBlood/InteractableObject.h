@@ -15,11 +15,11 @@ public:
 	// Sets default values for this actor's properties
 	AInteractableObject();
 
+	void OnInteract(APawn* interactingPlayer);
+
+	virtual void OnEngage(APawn* interactingPlayer);
+	virtual void OnDisengage(APawn* interactingPlayer);
+
 protected:
 	bool canInteract;
-
-
-	bool GetCanInteract();
-	virtual void OnInteract(AActor* interactingPlayer);
-	virtual void OnDisengage();
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Blueprint/UserWidget.h"
 #include "NewBloodCharacter.generated.h"
 
 class UInputComponent;
@@ -55,21 +56,15 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
-
-	struct TouchData
-	{
-		TouchData() { bIsPressed = false;Location=FVector::ZeroVector;}
-		bool bIsPressed;
-		ETouchIndex::Type FingerIndex;
-		FVector Location;
-		bool bMoved;
-	};
-	void BeginTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void EndTouch(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
-	TouchData	TouchItem;
 	
 protected:
+	UPROPERTY(EditAnywhere)
+		float interactionStartDistance;
+	UPROPERTY(EditAnywhere)
+		float interactionEndDistance;
+	bool canInteract;
+	void TryInteract();
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
@@ -80,5 +75,9 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> crosshairsWidgetBP;
+	UUserWidget* crosshairsWidgetInstance;
+	void SetPlayerControlMode(bool canMove);
 };
 
