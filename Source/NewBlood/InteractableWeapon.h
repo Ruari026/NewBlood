@@ -34,10 +34,6 @@ private:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* weaponMesh;
 
-	// Weapon Interaction Behaviour
-	FVector startPos;
-	FVector targetPos;
-
 	// Weapon Details
 	UPROPERTY(EditAnywhere)
 		FString weaponName;

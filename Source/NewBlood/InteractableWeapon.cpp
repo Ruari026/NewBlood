@@ -24,18 +24,12 @@ AInteractableWeapon::AInteractableWeapon()
 void AInteractableWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	startPos = this->GetActorLocation();
-	targetPos = this->GetActorLocation();
 }
 
 // Called every frame
 void AInteractableWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	FVector newPos = FMath::Lerp(this->GetActorLocation(), targetPos, DeltaTime);
-
 }
 
 
