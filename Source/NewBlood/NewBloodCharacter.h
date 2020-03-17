@@ -29,6 +29,9 @@ protected:
 	virtual void BeginPlay();
 
 public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -75,9 +78,8 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	class UPlayerCrosshairsWidget* crosshairsWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
-		TSubclassOf<UUserWidget> crosshairsWidgetBP;
-	UUserWidget* crosshairsWidgetInstance;
+		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
 	void SetPlayerControlMode(bool canMove);
 };
-

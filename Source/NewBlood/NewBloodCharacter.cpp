@@ -14,6 +14,7 @@
 
 #include "GameFramework/Actor.h"
 #include "InteractableObject.h"
+#include "PlayerCrosshairsWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -55,10 +56,47 @@ void ANewBloodCharacter::BeginPlay()
 	// Adding Crosshairs to the player viewport
 	if (crosshairsWidgetBP != nullptr)
 	{
-		crosshairsWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), crosshairsWidgetBP);
+		crosshairsWidgetInstance = CreateWidget<UPlayerCrosshairsWidget>(GetWorld(), crosshairsWidgetBP);
 		if (crosshairsWidgetInstance != nullptr)
 		{
 			crosshairsWidgetInstance->AddToViewport();
+		}
+	}
+}
+
+void ANewBloodCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// Checking if there is anything interactable in front of the player
+	if (canInteract)
+	{
+		// Fires a raycast in the direction that the player is looking
+		FVector fireLocation = FirstPersonCameraComponent->GetComponentLocation();
+		FVector fireDirection = FirstPersonCameraComponent->GetForwardVector(); //this->GetActorForwardVector();
+
+		FVector startFire = (fireLocation + (fireDirection * interactionStartDistance));
+		FVector endFire = (fireLocation + (fireDirection * interactionEndDistance));
+
+		// Checks if the raycast has sit anything
+		FHitResult hitObject;
+		FCollisionQueryParams collisionParams;
+		if (GetWorld()->LineTraceSingleByChannel(hitObject, startFire, endFire, ECC_PhysicsBody, collisionParams))
+		{
+			// Checks if the hit object is an interactable object
+			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
+			if (hitInteractable != nullptr)
+			{
+				crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+			}
+			else
+			{
+				crosshairsWidgetInstance->ShowInteractionOpportunity(false);
+			}
+		}
+		else
+		{
+			crosshairsWidgetInstance->ShowInteractionOpportunity(false);
 		}
 	}
 }

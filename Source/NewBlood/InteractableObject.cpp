@@ -29,10 +29,56 @@ void AInteractableObject::OnInteract(APawn* interactingPlayer)
 
 void AInteractableObject::OnEngage(APawn* interactingPlayer)
 {
-	this->canInteract = false;
+	if (Role == ROLE_Authority)
+	{
+		ServerSetCanInteract(false);
+	}
+	else
+	{
+		ClientSetCanInteract(false);
+	}
 }
 
 void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 {
-	this->canInteract = true;
+	if (Role == ROLE_Authority)
+	{
+		ServerSetCanInteract(true);
+	}
+	else
+	{
+		ClientSetCanInteract(true);
+	}
+}
+
+
+/*
+====================================================================================================
+SERVER ONLY - Interaction Details
+====================================================================================================
+*/
+void AInteractableObject::ServerSetCanInteract_Implementation(bool newCanInteract)
+{
+	canInteract = newCanInteract;
+}
+
+bool AInteractableObject::ServerSetCanInteract_Validate(bool newCanInteract)
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+CLIENT ONLY - Interaction Details
+====================================================================================================
+*/
+void AInteractableObject::ClientSetCanInteract_Implementation(bool newCanInteract)
+{
+	canInteract = newCanInteract;
+}
+
+bool AInteractableObject::ClientSetCanInteract_Validate(bool newCanInteract)
+{
+	return true;
 }

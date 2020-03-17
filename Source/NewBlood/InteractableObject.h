@@ -21,5 +21,10 @@ public:
 	virtual void OnDisengage(APawn* interactingPlayer);
 
 protected:
-	bool canInteract;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool canInteract;
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ServerSetCanInteract(bool newCanInteract);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ClientSetCanInteract(bool newCanInteract);
 };
