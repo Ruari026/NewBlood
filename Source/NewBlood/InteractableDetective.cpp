@@ -42,8 +42,6 @@ void AInteractableDetective::OnEngage(APawn* interactingPlayer)
 {
 	Super::OnEngage(interactingPlayer);
 
-	UE_LOG(LogTemp, Warning, TEXT("Object Is An Detective Object"));
-
 	// Disables Player Movement & Enables UI Interaction
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
 	if (playerCharacter != nullptr)

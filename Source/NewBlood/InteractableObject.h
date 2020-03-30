@@ -20,13 +20,7 @@ public:
 	virtual void OnEngage(APawn* interactingPlayer);
 	virtual void OnDisengage(APawn* interactingPlayer);
 
-	bool GetCanInteract();
-
 protected:
-	UPROPERTY(BlueprintReadWrite)
-		class ANewBloodCharacter* targetPlayer;
-
-	// Preventing Multiple players from interacting with the same item
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canInteract;
 	UFUNCTION(NetMulticast, Reliable, WithValidation)

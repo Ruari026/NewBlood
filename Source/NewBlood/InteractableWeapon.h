@@ -4,14 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "InteractableObject.h"
-#include "PickupableObject.h"
 #include "InteractableWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NEWBLOOD_API AInteractableWeapon : public APickupableObject
+class NEWBLOOD_API AInteractableWeapon : public AInteractableObject
 {
 	GENERATED_BODY()
 	
@@ -34,6 +33,12 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* weaponMesh;
+
+	// Weapon Details
+	UPROPERTY(EditAnywhere)
+		FString weaponName;
+	UPROPERTY(EditAnywhere)
+		FString weaponDamageType;
 
 	// Weapon Details UI
 	class UWeaponDetailsWidget* detailsWidgetInstance;

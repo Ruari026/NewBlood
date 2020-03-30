@@ -42,8 +42,6 @@ void AInteractableVictim::OnEngage(APawn* interactingPlayer)
 {
 	Super::OnEngage(interactingPlayer);
 
-	UE_LOG(LogTemp, Warning, TEXT("Object Is An Victim Object"));
-
 	// Disables Player Movement & Enables UI Interaction
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
 	if (playerCharacter != nullptr)
