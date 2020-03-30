@@ -2,6 +2,8 @@
 
 
 #include "InteractableObject.h"
+#include "NewBloodCharacter.h"
+#include "Engine/Engine.h"
 
 // Sets default values
 AInteractableObject::AInteractableObject()
@@ -10,6 +12,7 @@ AInteractableObject::AInteractableObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	canInteract = true;
+	bReplicates = true;
 }
 
 
@@ -29,6 +32,16 @@ void AInteractableObject::OnInteract(APawn* interactingPlayer)
 
 void AInteractableObject::OnEngage(APawn* interactingPlayer)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Object Is An Interactable Object"));
+
+	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
+	if (playerCharacter != nullptr)
+	{
+		targetPlayer = playerCharacter;
+	}
+
+	// RCP Handling
+	//this->SetOwner(interactingPlayer);
 	if (Role == ROLE_Authority)
 	{
 		ServerSetCanInteract(false);
@@ -41,6 +54,9 @@ void AInteractableObject::OnEngage(APawn* interactingPlayer)
 
 void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 {
+	targetPlayer = nullptr;
+
+	// RCP Handling
 	if (Role == ROLE_Authority)
 	{
 		ServerSetCanInteract(true);
@@ -49,6 +65,12 @@ void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 	{
 		ClientSetCanInteract(true);
 	}
+	//this->SetOwner(nullptr);
+}
+
+bool AInteractableObject::GetCanInteract()
+{
+	return this->canInteract;
 }
 
 
@@ -75,7 +97,7 @@ CLIENT ONLY - Interaction Details
 */
 void AInteractableObject::ClientSetCanInteract_Implementation(bool newCanInteract)
 {
-	canInteract = newCanInteract;
+	ServerSetCanInteract(newCanInteract);
 }
 
 bool AInteractableObject::ClientSetCanInteract_Validate(bool newCanInteract)

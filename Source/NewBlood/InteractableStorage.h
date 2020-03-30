@@ -3,21 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractableObject.h"
 #include "PickupableObject.h"
-#include "InteractableWeapon.generated.h"
+#include "InteractableStorage.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NEWBLOOD_API AInteractableWeapon : public APickupableObject
+class NEWBLOOD_API AInteractableStorage : public AInteractableObject
 {
 	GENERATED_BODY()
-	
+
 public:
 	// Sets default values for this actor's properties
-	AInteractableWeapon();
+	AInteractableStorage();
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,12 +30,12 @@ public:
 	virtual void OnEngage(APawn* interactingPlayer) override;
 	virtual void OnDisengage(APawn* interactingPlayer) override;
 
-private:
-	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* weaponMesh;
+	UPROPERTY(BlueprintReadWrite)
+		APickupableObject* storedObject;
 
-	// Weapon Details UI
-	class UWeaponDetailsWidget* detailsWidgetInstance;
+private:
+	// Details UI
+	class UStorageDetailsWidget* detailsWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
-		TSubclassOf<UWeaponDetailsWidget> detailsWidgetBP;
+		TSubclassOf<UStorageDetailsWidget> detailsWidgetBP;
 };

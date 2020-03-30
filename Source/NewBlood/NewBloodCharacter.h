@@ -78,8 +78,17 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	// Crosshairs
 	class UPlayerCrosshairsWidget* crosshairsWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
 	void SetPlayerControlMode(bool canMove);
+
+	// Inventory Management
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UPlayerInventory* playerInventory;
+	class UPlayerInventoryWidget* inventoryWidgetInstance;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UPlayerInventoryWidget> inventoryWidgetBP;
+
 };
