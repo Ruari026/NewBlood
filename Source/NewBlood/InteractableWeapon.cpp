@@ -42,6 +42,8 @@ void AInteractableWeapon::OnEngage(APawn* interactingPlayer)
 {
 	Super::OnEngage(interactingPlayer);
 
+	UE_LOG(LogTemp, Warning, TEXT("Object Is A Weapon Object"));
+
 	// Disables Player Movement & Enables UI Interaction
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
 	if (playerCharacter != nullptr)
@@ -60,7 +62,6 @@ void AInteractableWeapon::OnEngage(APawn* interactingPlayer)
 			{
 				// Setting the UI to show this specific weapon's information
 				detailsWidgetInstance->targetWeapon = this;
-				detailsWidgetInstance->SetWidgetDetails(this->weaponName, this->weaponDamageType);
 
 				// Showing UI to player
 				detailsWidgetInstance->AddToViewport();

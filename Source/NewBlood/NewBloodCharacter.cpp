@@ -14,7 +14,9 @@
 
 #include "GameFramework/Actor.h"
 #include "InteractableObject.h"
+#include "PlayerInventory.h"
 #include "PlayerCrosshairsWidget.h"
+#include "PlayerInventoryWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -45,6 +47,11 @@ ANewBloodCharacter::ANewBloodCharacter()
 	Mesh1P->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
 	Mesh1P->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
 
+	playerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("PlayerInventory"));
+	if (playerInventory == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ERROR"));
+	}
 	canInteract = true;
 }
 
@@ -60,6 +67,19 @@ void ANewBloodCharacter::BeginPlay()
 		if (crosshairsWidgetInstance != nullptr)
 		{
 			crosshairsWidgetInstance->AddToViewport();
+		}
+	}
+
+	if (inventoryWidgetBP != nullptr)
+	{
+		if (IsLocallyControlled())
+		{
+			inventoryWidgetInstance = CreateWidget<UPlayerInventoryWidget>(GetWorld(), inventoryWidgetBP);
+			if (inventoryWidgetInstance != nullptr)
+			{
+				inventoryWidgetInstance->AddToViewport();
+				inventoryWidgetInstance->targetInventory = this->playerInventory;
+			}
 		}
 	}
 }
@@ -87,7 +107,15 @@ void ANewBloodCharacter::Tick(float DeltaTime)
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
-				crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+				// TODO: Show that a player is already interacting with the object
+				if (hitInteractable->GetCanInteract())
+				{
+					crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+				}
+				else
+				{
+					crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+				}
 			}
 			else
 			{
@@ -131,6 +159,11 @@ void ANewBloodCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("TurnRate", this, &ANewBloodCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ANewBloodCharacter::LookUpAtRate);
+
+	// Inventory Controls
+	//PlayerInputComponent->BindAction("ScrollLeft", IE_Pressed, this, &ANewBloodCharacter::playerInventory->DecreaseSelectedItem);
+	//PlayerInputComponent->BindAction("ScrollRight", IE_Pressed, this, &ANewBloodCharacter::playerInventory->IncreaseSelectedItem);
+
 }
 
 void ANewBloodCharacter::SetPlayerControlMode(bool canMove)

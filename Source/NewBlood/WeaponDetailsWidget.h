@@ -22,7 +22,15 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void SetWidgetDetails(const FString& weaponName, const FString& damageType);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		void ShowFurtherDetails();
+		void ShowAvailableActions();
 	UFUNCTION(BlueprintCallable)
 		void CloseDetailsWidget();
+	
+	// Player Actions
+	UFUNCTION(BlueprintCallable)
+		void PickupWeapon();
+	UFUNCTION(BlueprintCallable)
+		void RevealFingerprints();
+	UFUNCTION(BlueprintCallable)
+		void WipeBlood();
 };
