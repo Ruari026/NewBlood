@@ -24,6 +24,7 @@ class ANewBloodCharacter : public ACharacter
 
 public:
 	ANewBloodCharacter();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 
 protected:
 	virtual void BeginPlay();
@@ -65,8 +66,13 @@ protected:
 		float interactionStartDistance;
 	UPROPERTY(EditAnywhere)
 		float interactionEndDistance;
-	bool canInteract;
+
+	UPROPERTY(Replicated)
+		bool canInteract;
 	void TryInteract();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerInteract(AInteractableObject* hitInteractable);
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
@@ -82,7 +88,9 @@ public:
 	class UPlayerCrosshairsWidget* crosshairsWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
-	void SetPlayerControlMode(bool canMove);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void SetPlayerControlMode(bool canMove);
 
 	// Inventory Management
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

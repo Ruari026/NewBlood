@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "UnrealNetwork.h"
 
 #include "GameFramework/Actor.h"
 #include "InteractableObject.h"
@@ -53,6 +54,14 @@ ANewBloodCharacter::ANewBloodCharacter()
 		UE_LOG(LogTemp, Warning, TEXT("ERROR"));
 	}
 	canInteract = true;
+
+	bReplicates = true;
+	bAlwaysRelevant = true;
+}
+
+void ANewBloodCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(ANewBloodCharacter, canInteract);
 }
 
 void ANewBloodCharacter::BeginPlay()
@@ -166,7 +175,7 @@ void ANewBloodCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 }
 
-void ANewBloodCharacter::SetPlayerControlMode(bool canMove)
+void ANewBloodCharacter::SetPlayerControlMode_Implementation(bool canMove)
 {
 	APlayerController* playerController = Cast<APlayerController>(this->GetController());
 	if (playerController != nullptr)
@@ -206,6 +215,11 @@ void ANewBloodCharacter::SetPlayerControlMode(bool canMove)
 			canInteract = false;
 		}
 	}
+}
+
+bool ANewBloodCharacter::SetPlayerControlMode_Validate(bool canMove)
+{
+	return true;
 }
 
 
@@ -252,11 +266,15 @@ Interaction
 */
 void ANewBloodCharacter::TryInteract()
 {
+	AActor* owner = this->GetOwner();
+	FString name = owner->GetName();
+	UE_LOG(LogTemp, Warning, TEXT("%s Server Is Trying To Interact"), *name);
+
 	if (canInteract)
 	{
 		// Fires a raycast in the direction that the player is looking
 		FVector fireLocation = FirstPersonCameraComponent->GetComponentLocation();
-		FVector fireDirection = FirstPersonCameraComponent->GetForwardVector(); //this->GetActorForwardVector();
+		FVector fireDirection = FirstPersonCameraComponent->GetForwardVector();
 
 		FVector startFire = (fireLocation + (fireDirection * interactionStartDistance));
 		FVector endFire = (fireLocation + (fireDirection * interactionEndDistance));
@@ -266,17 +284,25 @@ void ANewBloodCharacter::TryInteract()
 		FCollisionQueryParams collisionParams;
 		if (GetWorld()->LineTraceSingleByChannel(hitObject, startFire, endFire, ECC_PhysicsBody, collisionParams))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Player Is Looking At: %s"), *hitObject.GetActor()->GetName());
-
 			// Checks if the hit object is an interactable object
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
-				// Interacts with that object
-				hitInteractable->OnInteract(this);
+				ServerInteract(hitInteractable);
 			}
 		}
 	}
 }
 
+void ANewBloodCharacter::ServerInteract_Implementation(AInteractableObject* hitInteractable)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Is Looking At: %s"), *hitInteractable->GetName());
 
+	// Interacts with that object
+	hitInteractable->OnInteract(this);
+}
+
+bool ANewBloodCharacter::ServerInteract_Validate(AInteractableObject* hitInteractable)
+{
+	return true;
+}

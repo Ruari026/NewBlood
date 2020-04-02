@@ -3,7 +3,7 @@
 
 #include "InteractableObject.h"
 #include "NewBloodCharacter.h"
-#include "Engine/Engine.h"
+#include "UnrealNetwork.h"
 
 // Sets default values
 AInteractableObject::AInteractableObject()
@@ -13,6 +13,13 @@ AInteractableObject::AInteractableObject()
 
 	canInteract = true;
 	bReplicates = true;
+}
+
+void AInteractableObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AInteractableObject, canInteract);
 }
 
 
@@ -41,15 +48,7 @@ void AInteractableObject::OnEngage(APawn* interactingPlayer)
 	}
 
 	// RCP Handling
-	//this->SetOwner(interactingPlayer);
-	if (Role == ROLE_Authority)
-	{
-		ServerSetCanInteract(false);
-	}
-	else
-	{
-		ClientSetCanInteract(false);
-	}
+	canInteract = false;
 }
 
 void AInteractableObject::OnDisengage(APawn* interactingPlayer)
@@ -57,15 +56,7 @@ void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 	targetPlayer = nullptr;
 
 	// RCP Handling
-	if (Role == ROLE_Authority)
-	{
-		ServerSetCanInteract(true);
-	}
-	else
-	{
-		ClientSetCanInteract(true);
-	}
-	//this->SetOwner(nullptr);
+	canInteract = true;
 }
 
 bool AInteractableObject::GetCanInteract()
@@ -73,34 +64,16 @@ bool AInteractableObject::GetCanInteract()
 	return this->canInteract;
 }
 
-
-/*
-====================================================================================================
-SERVER ONLY - Interaction Details
-====================================================================================================
-*/
-void AInteractableObject::ServerSetCanInteract_Implementation(bool newCanInteract)
+void AInteractableObject::ServerInteract_Implementation(APawn* interactingPlayer)
 {
-	canInteract = newCanInteract;
+	if (canInteract)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Is Interacting With: %s"), *this->GetName());
+		this->OnEngage(interactingPlayer);
+	}
 }
 
-bool AInteractableObject::ServerSetCanInteract_Validate(bool newCanInteract)
-{
-	return true;
-}
-
-
-/*
-====================================================================================================
-CLIENT ONLY - Interaction Details
-====================================================================================================
-*/
-void AInteractableObject::ClientSetCanInteract_Implementation(bool newCanInteract)
-{
-	ServerSetCanInteract(newCanInteract);
-}
-
-bool AInteractableObject::ClientSetCanInteract_Validate(bool newCanInteract)
+bool AInteractableObject::ServerInteract_Validate(APawn* interactingPlayer)
 {
 	return true;
 }
