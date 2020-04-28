@@ -288,21 +288,11 @@ void ANewBloodCharacter::TryInteract()
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
-				ServerInteract(hitInteractable);
+				UE_LOG(LogTemp, Warning, TEXT("Player Is Looking At: %s"), *hitInteractable->GetName());
+
+				// Interacts with that object
+				hitInteractable->OnInteract(this);
 			}
 		}
 	}
-}
-
-void ANewBloodCharacter::ServerInteract_Implementation(AInteractableObject* hitInteractable)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Player Is Looking At: %s"), *hitInteractable->GetName());
-
-	// Interacts with that object
-	hitInteractable->OnInteract(this);
-}
-
-bool ANewBloodCharacter::ServerInteract_Validate(AInteractableObject* hitInteractable)
-{
-	return true;
 }
