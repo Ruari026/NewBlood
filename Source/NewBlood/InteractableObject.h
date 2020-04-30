@@ -17,9 +17,6 @@ public:
 
 	void OnInteract(APawn* interactingPlayer);
 
-	UFUNCTION(Server, Reliable, WithValidation)
-		void ServerInteract(APawn* interactingPlayer);
-
 	virtual void OnEngage(APawn* interactingPlayer);
 	virtual void OnDisengage(APawn* interactingPlayer);
 
@@ -30,6 +27,10 @@ protected:
 		class ANewBloodCharacter* targetPlayer;
 
 	// Preventing Multiple players from interacting with the same item
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canInteract;
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ServerSetCanInteract(bool newCanInteract);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ClientSetCanInteract(bool newCanInteract);
 };
