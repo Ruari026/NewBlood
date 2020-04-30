@@ -71,6 +71,9 @@ protected:
 		bool canInteract;
 	void TryInteract();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerInteract(AInteractableObject* hitInteractable);
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
