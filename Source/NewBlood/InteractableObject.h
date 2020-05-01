@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UnrealNetwork.h"
 #include "InteractableObject.generated.h"
 
 UCLASS()
@@ -14,6 +15,7 @@ class NEWBLOOD_API AInteractableObject : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AInteractableObject();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 
 	void OnInteract(APawn* interactingPlayer);
 
@@ -27,7 +29,7 @@ protected:
 		class ANewBloodCharacter* targetPlayer;
 
 	// Preventing Multiple players from interacting with the same item
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool canInteract;
 
 	// Handling Multiplayer Behaviour - Interaction

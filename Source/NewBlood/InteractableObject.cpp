@@ -4,6 +4,7 @@
 #include "InteractableObject.h"
 #include "NewBloodCharacter.h"
 #include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AInteractableObject::AInteractableObject()
@@ -15,6 +16,10 @@ AInteractableObject::AInteractableObject()
 	bReplicates = true;
 }
 
+void AInteractableObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AInteractableObject, canInteract);
+}
 
 /*
 ====================================================================================================
@@ -32,7 +37,10 @@ void AInteractableObject::OnInteract(APawn* interactingPlayer)
 
 void AInteractableObject::OnEngage(APawn* interactingPlayer)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Object Is An Interactable Object"));
+	// Ownership Handling
+	AActor* a = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	this->SetOwner(a);
+	AActor* b = this->GetOwner();
 
 	// RCP Handling
 	this->ClientEngageBehaviour(interactingPlayer);
@@ -44,6 +52,9 @@ void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 	// RCP Handling
 	this->ClientDisengageBehaviour(interactingPlayer);
 	this->ServerDisengageBehaviour(interactingPlayer);
+
+	// Ownership Handling
+	//this->SetOwner(nullptr);
 }
 
 bool AInteractableObject::GetCanInteract()
@@ -59,6 +70,8 @@ On Interaction Details
 */
 void AInteractableObject::ClientEngageBehaviour(APawn* interactingPlayer)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Client: Engage"));
+
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
 	if (playerCharacter != nullptr)
 	{
@@ -68,6 +81,8 @@ void AInteractableObject::ClientEngageBehaviour(APawn* interactingPlayer)
 
 void AInteractableObject::ServerEngageBehaviour_Implementation(APawn* interactingPlayer)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Server: Engage"));
+
 	this->canInteract = false;
 }
 
@@ -84,11 +99,15 @@ On Disengage Details
 */
 void AInteractableObject::ClientDisengageBehaviour(APawn* interactingPlayer)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Client: Disengage"));
+
 	targetPlayer = nullptr;
 }
 
 void AInteractableObject::ServerDisengageBehaviour_Implementation(APawn* interactingPlayer)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Server: Disengage"));
+
 	this->canInteract = true;
 }
 
