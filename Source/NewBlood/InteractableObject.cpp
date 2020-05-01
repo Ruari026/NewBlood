@@ -34,38 +34,16 @@ void AInteractableObject::OnEngage(APawn* interactingPlayer)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Object Is An Interactable Object"));
 
-	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
-	if (playerCharacter != nullptr)
-	{
-		targetPlayer = playerCharacter;
-	}
-
 	// RCP Handling
-	//this->SetOwner(interactingPlayer);
-	if (Role == ROLE_Authority)
-	{
-		ServerSetCanInteract(false);
-	}
-	else
-	{
-		ClientSetCanInteract(false);
-	}
+	this->ClientEngageBehaviour(interactingPlayer);
+	this->ServerEngageBehaviour(interactingPlayer);
 }
 
 void AInteractableObject::OnDisengage(APawn* interactingPlayer)
 {
-	targetPlayer = nullptr;
-
 	// RCP Handling
-	if (Role == ROLE_Authority)
-	{
-		ServerSetCanInteract(true);
-	}
-	else
-	{
-		ClientSetCanInteract(true);
-	}
-	//this->SetOwner(nullptr);
+	this->ClientDisengageBehaviour(interactingPlayer);
+	this->ServerDisengageBehaviour(interactingPlayer);
 }
 
 bool AInteractableObject::GetCanInteract()
@@ -76,15 +54,24 @@ bool AInteractableObject::GetCanInteract()
 
 /*
 ====================================================================================================
-SERVER ONLY - Interaction Details
+On Interaction Details
 ====================================================================================================
 */
-void AInteractableObject::ServerSetCanInteract_Implementation(bool newCanInteract)
+void AInteractableObject::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	canInteract = newCanInteract;
+	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
+	if (playerCharacter != nullptr)
+	{
+		targetPlayer = playerCharacter;
+	}
 }
 
-bool AInteractableObject::ServerSetCanInteract_Validate(bool newCanInteract)
+void AInteractableObject::ServerEngageBehaviour_Implementation(APawn* interactingPlayer)
+{
+	this->canInteract = false;
+}
+
+bool AInteractableObject::ServerEngageBehaviour_Validate(APawn* interactingPlayer)
 {
 	return true;
 }
@@ -92,15 +79,20 @@ bool AInteractableObject::ServerSetCanInteract_Validate(bool newCanInteract)
 
 /*
 ====================================================================================================
-CLIENT ONLY - Interaction Details
+On Disengage Details
 ====================================================================================================
 */
-void AInteractableObject::ClientSetCanInteract_Implementation(bool newCanInteract)
+void AInteractableObject::ClientDisengageBehaviour(APawn* interactingPlayer)
 {
-	ServerSetCanInteract(newCanInteract);
+	targetPlayer = nullptr;
 }
 
-bool AInteractableObject::ClientSetCanInteract_Validate(bool newCanInteract)
+void AInteractableObject::ServerDisengageBehaviour_Implementation(APawn* interactingPlayer)
+{
+	this->canInteract = true;
+}
+
+bool AInteractableObject::ServerDisengageBehaviour_Validate(APawn* interactingPlayer)
 {
 	return true;
 }

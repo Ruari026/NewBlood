@@ -29,8 +29,17 @@ protected:
 	// Preventing Multiple players from interacting with the same item
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool canInteract;
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
-		void ServerSetCanInteract(bool newCanInteract);
+
+	// Handling Multiplayer Behaviour - Interaction
+	UFUNCTION()
+		virtual void ClientEngageBehaviour(APawn* interactingPlayer);
 	UFUNCTION(Server, Reliable, WithValidation)
-		void ClientSetCanInteract(bool newCanInteract);
+		void ServerEngageBehaviour(APawn* interactingPlayer);
+
+
+	// Handling Multiplayer Behaviour - Disengage
+	UFUNCTION()
+		virtual void ClientDisengageBehaviour(APawn* interactingPlayer);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerDisengageBehaviour(APawn* interactingPlayer);
 };
