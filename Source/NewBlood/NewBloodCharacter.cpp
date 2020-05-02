@@ -114,7 +114,7 @@ void ANewBloodCharacter::Tick(float DeltaTime)
 				}
 				else
 				{
-					crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+					crosshairsWidgetInstance->ShowInteractionOpportunity(false);
 				}
 			}
 			else
@@ -334,6 +334,7 @@ void ANewBloodCharacter::DisengageObject()
 	ServerDisengageObject();
 
 	this->interactingObject = nullptr;
+	SetInteractingObject(nullptr);
 }
 
 void ANewBloodCharacter::ClientDisengageObject()
