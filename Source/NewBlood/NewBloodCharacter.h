@@ -84,11 +84,30 @@ public:
 		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
 	void SetPlayerControlMode(bool canMove);
 
+	// Interaction - Engagement
+	AInteractableObject* interactingObject;
+	UFUNCTION(Server, Reliable, WithValidation)
+		void SetInteractingObject(AInteractableObject* interactingObject);
+	UFUNCTION()
+		void EngageObject(AInteractableObject* objectToInteract);
+	UFUNCTION()
+		void ClientEngageObject();
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerEngageObject(); 
+
+	// Interaction - Disengagment
+	UFUNCTION()
+		void DisengageObject();
+	UFUNCTION()
+		void ClientDisengageObject();
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerDisengageObject();
+
+
 	// Inventory Management
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		class UPlayerInventory* playerInventory;
 	class UPlayerInventoryWidget* inventoryWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerInventoryWidget> inventoryWidgetBP;
-
 };

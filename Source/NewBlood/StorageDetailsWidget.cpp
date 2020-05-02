@@ -2,11 +2,12 @@
 
 
 #include "StorageDetailsWidget.h"
+#include "NewBloodCharacter.h"
 
 void UStorageDetailsWidget::CloseDetailsWidget()
 {
 	if (targetStorage != nullptr)
 	{
-		targetStorage->OnDisengage(GetOwningPlayerPawn());
+		targetStorage->targetPlayer->DisengageObject();
 	}
 }

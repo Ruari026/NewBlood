@@ -19,8 +19,13 @@ public:
 	APickupableObject();
 
 	// Inherited Interaction Behaviour
-	virtual void OnEngage(APawn* interactingPlayer);
-	virtual void OnDisengage(APawn* interactingPlayer);
+	// Handling Multiplayer Behaviour - Engagement
+	virtual void ClientEngageBehaviour(APawn* interactingPlayer) override;
+	virtual void ServerEngageBehaviour(APawn* interactingPlayer) override;
+	// Handling Multiplayer Behaviour - Disengagement
+	virtual void ClientDisengageBehaviour(APawn* interactingPlayer) override;
+	virtual void ServerDisengageBehaviour(APawn* interactingPlayer) override;
+
 
 	void AddToPlayerInventory();
 

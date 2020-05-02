@@ -35,12 +35,12 @@ void AInteractableVictim::Tick(float DeltaTime)
 
 /*
 ====================================================================================================
-Interaction Behaviour
+Interaction Behaviour - Engagement
 ====================================================================================================
 */
-void AInteractableVictim::OnEngage(APawn* interactingPlayer)
+void AInteractableVictim::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnEngage(interactingPlayer);
+	Super::ClientEngageBehaviour(interactingPlayer);
 
 	UE_LOG(LogTemp, Warning, TEXT("Object Is An Victim Object"));
 
@@ -71,9 +71,21 @@ void AInteractableVictim::OnEngage(APawn* interactingPlayer)
 	}
 }
 
-void AInteractableVictim::OnDisengage(APawn* interactingPlayer)
+void AInteractableVictim::ServerEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnDisengage(interactingPlayer);
+	Super::ServerEngageBehaviour(interactingPlayer);
+}
+
+
+
+/*
+====================================================================================================
+Interaction Behaviour - Disengagement
+====================================================================================================
+*/
+void AInteractableVictim::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ClientDisengageBehaviour(interactingPlayer);
 
 	// Removes Weapon Details UI
 	if (detailsWidgetInstance != nullptr)
@@ -87,4 +99,9 @@ void AInteractableVictim::OnDisengage(APawn* interactingPlayer)
 	{
 		playerCharacter->SetPlayerControlMode(true);
 	}
+}
+
+void AInteractableVictim::ServerDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ServerDisengageBehaviour(interactingPlayer);
 }

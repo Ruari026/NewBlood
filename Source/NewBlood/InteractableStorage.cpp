@@ -26,12 +26,12 @@ void AInteractableStorage::Tick(float DeltaTime)
 
 /*
 ====================================================================================================
-Interaction Behaviour
+Interaction Behaviour - Engagement
 ====================================================================================================
 */
-void AInteractableStorage::OnEngage(APawn* interactingPlayer)
+void AInteractableStorage::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnEngage(interactingPlayer);
+	Super::ClientEngageBehaviour(interactingPlayer);
 
 	UE_LOG(LogTemp, Warning, TEXT("Object Is An Storage Object"));
 
@@ -62,9 +62,21 @@ void AInteractableStorage::OnEngage(APawn* interactingPlayer)
 	}
 }
 
-void AInteractableStorage::OnDisengage(APawn* interactingPlayer)
+void AInteractableStorage::ServerEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnDisengage(interactingPlayer);
+	Super::ServerEngageBehaviour(interactingPlayer);
+}
+
+
+
+/*
+====================================================================================================
+Interaction Behaviour - Disengagement
+====================================================================================================
+*/
+void AInteractableStorage::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ClientDisengageBehaviour(interactingPlayer);
 
 	// Removes Weapon Details UI
 	if (detailsWidgetInstance != nullptr)
@@ -78,4 +90,9 @@ void AInteractableStorage::OnDisengage(APawn* interactingPlayer)
 	{
 		playerCharacter->SetPlayerControlMode(true);
 	}
+}
+
+void AInteractableStorage::ServerDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ServerDisengageBehaviour(interactingPlayer);
 }

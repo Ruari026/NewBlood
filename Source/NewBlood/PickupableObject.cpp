@@ -11,9 +11,15 @@ APickupableObject::APickupableObject()
 
 }
 
-void APickupableObject::OnEngage(APawn* interactingPlayer)
+
+/*
+====================================================================================================
+Interaction Behaviour - Engagement
+====================================================================================================
+*/
+void APickupableObject::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnEngage(interactingPlayer);
+	Super::ClientEngageBehaviour(interactingPlayer);
 
 	UE_LOG(LogTemp, Warning, TEXT("Object Is A Pickupable Object"));
 
@@ -33,9 +39,20 @@ void APickupableObject::OnEngage(APawn* interactingPlayer)
 	}
 }
 
-void APickupableObject::OnDisengage(APawn* interactingPlayer)
+void APickupableObject::ServerEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnDisengage(interactingPlayer);
+	Super::ServerEngageBehaviour(interactingPlayer);
+}
+
+
+/*
+====================================================================================================
+Interaction Behaviour - Disengagement
+====================================================================================================
+*/
+void APickupableObject::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ClientDisengageBehaviour(interactingPlayer);
 
 	// Removes Weapon Details UI
 	if (pickupWidgetInstance != nullptr)
@@ -43,6 +60,12 @@ void APickupableObject::OnDisengage(APawn* interactingPlayer)
 		pickupWidgetInstance->RemoveFromParent();
 	}
 }
+
+void APickupableObject::ServerDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ServerDisengageBehaviour(interactingPlayer);
+}
+
 
 void APickupableObject::AddToPlayerInventory()
 {

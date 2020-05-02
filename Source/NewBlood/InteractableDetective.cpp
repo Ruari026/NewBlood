@@ -35,14 +35,12 @@ void AInteractableDetective::Tick(float DeltaTime)
 
 /*
 ====================================================================================================
-Interaction Behaviour
+Interaction Behaviour - Engagement
 ====================================================================================================
 */
-void AInteractableDetective::OnEngage(APawn* interactingPlayer)
+void AInteractableDetective::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnEngage(interactingPlayer);
-
-	UE_LOG(LogTemp, Warning, TEXT("Object Is An Detective Object"));
+	Super::ClientEngageBehaviour(interactingPlayer);
 
 	// Disables Player Movement & Enables UI Interaction
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
@@ -70,9 +68,20 @@ void AInteractableDetective::OnEngage(APawn* interactingPlayer)
 	}
 }
 
-void AInteractableDetective::OnDisengage(APawn* interactingPlayer)
+void AInteractableDetective::ServerEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnDisengage(interactingPlayer);
+	Super::ServerEngageBehaviour(interactingPlayer);
+}
+
+
+/*
+====================================================================================================
+Interaction Behaviour - Disengagement
+====================================================================================================
+*/
+void AInteractableDetective::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ClientDisengageBehaviour(interactingPlayer);
 
 	// Removes Weapon Details UI
 	if (detailsWidgetInstance != nullptr)
@@ -86,4 +95,9 @@ void AInteractableDetective::OnDisengage(APawn* interactingPlayer)
 	{
 		playerCharacter->SetPlayerControlMode(true);
 	}
+}
+
+void AInteractableDetective::ServerDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ServerDisengageBehaviour(interactingPlayer);
 }

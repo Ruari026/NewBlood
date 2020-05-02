@@ -272,11 +272,81 @@ void ANewBloodCharacter::TryInteract()
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
-				// Interacts with that object
-				hitInteractable->OnInteract(this);
+				if (hitInteractable->GetCanInteract())
+				{
+					EngageObject(hitInteractable);
+				}
 			}
 		}
 	}
 }
 
+void ANewBloodCharacter::SetInteractingObject_Implementation(AInteractableObject* interactingObject)
+{
+	this->interactingObject = interactingObject;
+}
 
+bool ANewBloodCharacter::SetInteractingObject_Validate(AInteractableObject* interactingObject)
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+Interaction Engagement
+====================================================================================================
+*/
+void ANewBloodCharacter::EngageObject(AInteractableObject* objectToInteract)
+{
+	this->interactingObject = objectToInteract;
+	SetInteractingObject(objectToInteract);
+
+	ClientEngageObject();
+	ServerEngageObject();
+}
+
+void ANewBloodCharacter::ClientEngageObject()
+{
+	interactingObject->ClientEngageBehaviour(this);
+}
+
+void ANewBloodCharacter::ServerEngageObject_Implementation()
+{
+	APawn* interactingPlayer = this;
+	interactingObject->ServerEngageBehaviour(interactingPlayer);
+}
+
+bool ANewBloodCharacter::ServerEngageObject_Validate()
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+Interaction Disengagement
+====================================================================================================
+*/
+void ANewBloodCharacter::DisengageObject()
+{
+	ClientDisengageObject();
+	ServerDisengageObject();
+
+	this->interactingObject = nullptr;
+}
+
+void ANewBloodCharacter::ClientDisengageObject()
+{
+	interactingObject->ClientDisengageBehaviour(this);
+}
+
+void ANewBloodCharacter::ServerDisengageObject_Implementation()
+{
+	interactingObject->ServerDisengageBehaviour(this);
+}
+
+bool ANewBloodCharacter::ServerDisengageObject_Validate()
+{
+	return true;
+}
