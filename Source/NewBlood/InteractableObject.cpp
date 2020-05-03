@@ -114,3 +114,30 @@ bool AInteractableObject::ObjectOwnerTest_Validate()
 {
 	return true;
 }
+
+
+/*
+====================================================================================================
+Utility
+====================================================================================================
+*/
+void AInteractableObject::RemoveObjectFromWorld_Implementation()
+{
+	RemoveObjectFromAll();
+}
+
+bool AInteractableObject::RemoveObjectFromWorld_Validate()
+{
+	return true;
+}
+
+void AInteractableObject::RemoveObjectFromAll_Implementation()
+{
+	this->SetActorScale3D(FVector::ZeroVector);
+	//this->Destroy(true, false);
+}
+
+bool AInteractableObject::RemoveObjectFromAll_Validate()
+{
+	return true;
+}

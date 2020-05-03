@@ -46,4 +46,10 @@ protected:
 	// Preventing Multiple players from interacting with the same item
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool canInteract;
+
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void RemoveObjectFromWorld(); 
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void RemoveObjectFromAll();
 };

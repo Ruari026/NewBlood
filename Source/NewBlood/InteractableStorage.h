@@ -17,6 +17,7 @@ class NEWBLOOD_API AInteractableStorage : public AInteractableObject
 public:
 	// Sets default values for this actor's properties
 	AInteractableStorage();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,8 +35,12 @@ public:
 	virtual void ClientDisengageBehaviour(APawn* interactingPlayer) override;
 	virtual void ServerDisengageBehaviour(APawn* interactingPlayer) override;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		APickupableObject* storedObject;
+	UFUNCTION(BlueprintCallable)
+		void AddObjectToStorage(APickupableObject* objectToStore);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerStore(APickupableObject* objectToStore);
 
 private:
 	// Details UI

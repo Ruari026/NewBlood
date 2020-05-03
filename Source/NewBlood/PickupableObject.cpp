@@ -78,7 +78,7 @@ void APickupableObject::AddToPlayerInventory()
 	{
 		if (targetPlayer->playerInventory->AddItemToInventory(this))
 		{
-			this->SetActorScale3D(FVector::ZeroVector);
+			this->RemoveObjectFromWorld();
 		}
 	}
 }
