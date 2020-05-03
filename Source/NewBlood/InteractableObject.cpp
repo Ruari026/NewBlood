@@ -47,6 +47,8 @@ void AInteractableObject::ClientEngageBehaviour(APawn* interactingPlayer)
 	{
 		targetPlayer = playerCharacter;
 	}
+
+	ObjectOwnerTest();
 }
 
 void AInteractableObject::ServerEngageBehaviour(APawn* interactingPlayer)
@@ -62,6 +64,12 @@ void AInteractableObject::ServerEngageBehaviour(APawn* interactingPlayer)
 On Disengage Details
 ====================================================================================================
 */
+void AInteractableObject::OnDisengageObject(APawn* interactingPlayer)
+{
+	ClientDisengageBehaviour(interactingPlayer);
+	ServerDisengageBehaviour(interactingPlayer);
+}
+
 void AInteractableObject::ClientDisengageBehaviour(APawn* interactingPlayer)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Client: Disengage"));
@@ -69,9 +77,40 @@ void AInteractableObject::ClientDisengageBehaviour(APawn* interactingPlayer)
 	targetPlayer = nullptr;
 }
 
-void AInteractableObject::ServerDisengageBehaviour(APawn* interactingPlayer)
+void AInteractableObject::ServerDisengageBehaviour_Implementation(APawn* interactingPlayer)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Server: Disengage"));
 
 	this->canInteract = true;
+}
+
+bool AInteractableObject::ServerDisengageBehaviour_Validate(APawn* interactingPlayer)
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+Testing
+====================================================================================================
+*/
+void AInteractableObject::SetObjectOwner_Implementation(AActor* newOwner)
+{
+	this->SetOwner(newOwner);
+}
+
+bool AInteractableObject::SetObjectOwner_Validate(AActor* newOwner)
+{
+	return true;
+}
+
+void AInteractableObject::ObjectOwnerTest_Implementation()
+{
+	this->canInteract = false;
+}
+
+bool AInteractableObject::ObjectOwnerTest_Validate()
+{
+	return true;
 }

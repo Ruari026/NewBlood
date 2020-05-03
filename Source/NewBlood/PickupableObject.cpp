@@ -67,6 +67,11 @@ void APickupableObject::ServerDisengageBehaviour(APawn* interactingPlayer)
 }
 
 
+/*
+====================================================================================================
+Pickup Behaviour
+====================================================================================================
+*/
 void APickupableObject::AddToPlayerInventory()
 {
 	if (targetPlayer != nullptr)

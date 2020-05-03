@@ -302,6 +302,8 @@ void ANewBloodCharacter::EngageObject(AInteractableObject* objectToInteract)
 	this->interactingObject = objectToInteract;
 	SetInteractingObject(objectToInteract);
 
+	ChangeObjectOwner();
+
 	ClientEngageObject();
 	ServerEngageObject();
 }
@@ -325,29 +327,16 @@ bool ANewBloodCharacter::ServerEngageObject_Validate()
 
 /*
 ====================================================================================================
-Interaction Disengagement
+Testing
 ====================================================================================================
 */
-void ANewBloodCharacter::DisengageObject()
+void ANewBloodCharacter::ChangeObjectOwner_Implementation()
 {
-	ClientDisengageObject();
-	ServerDisengageObject();
-
-	this->interactingObject = nullptr;
-	SetInteractingObject(nullptr);
+	AActor* newOwner = this;
+	interactingObject->SetObjectOwner(newOwner);
 }
 
-void ANewBloodCharacter::ClientDisengageObject()
-{
-	interactingObject->ClientDisengageBehaviour(this);
-}
-
-void ANewBloodCharacter::ServerDisengageObject_Implementation()
-{
-	interactingObject->ServerDisengageBehaviour(this);
-}
-
-bool ANewBloodCharacter::ServerDisengageObject_Validate()
+bool ANewBloodCharacter::ChangeObjectOwner_Validate()
 {
 	return true;
 }

@@ -8,7 +8,7 @@ void UWeaponDetailsWidget::CloseDetailsWidget()
 {
 	if (targetWeapon != nullptr)
 	{
-		targetWeapon->targetPlayer->DisengageObject();
+		targetWeapon->OnDisengageObject(targetWeapon->targetPlayer);
 	}
 }
 

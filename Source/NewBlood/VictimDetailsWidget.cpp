@@ -9,6 +9,6 @@ void UVictimDetailsWidget::CloseDetailsWidget()
 {
 	if (targetVictim != nullptr)
 	{
-		targetVictim->targetPlayer->DisengageObject();
+		targetVictim->OnDisengageObject(targetVictim->targetPlayer);
 	}
 }

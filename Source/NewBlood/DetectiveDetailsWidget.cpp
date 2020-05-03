@@ -8,6 +8,6 @@ void UDetectiveDetailsWidget::CloseDetailsWidget()
 {
 	if (targetDetective != nullptr)
 	{
-		targetDetective->targetPlayer->DisengageObject();
+		targetDetective->OnDisengageObject(targetDetective->targetPlayer);
 	}
 }

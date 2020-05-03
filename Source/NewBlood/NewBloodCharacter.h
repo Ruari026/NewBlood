@@ -93,16 +93,11 @@ public:
 	UFUNCTION()
 		void ClientEngageObject();
 	UFUNCTION(Server, Reliable, WithValidation)
-		void ServerEngageObject(); 
+		void ServerEngageObject();
 
-	// Interaction - Disengagment
-	UFUNCTION()
-		void DisengageObject();
-	UFUNCTION()
-		void ClientDisengageObject();
+	// RPC Testing
 	UFUNCTION(Server, Reliable, WithValidation)
-		void ServerDisengageObject();
-
+		void ChangeObjectOwner();
 
 	// Inventory Management
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

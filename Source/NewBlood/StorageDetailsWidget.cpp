@@ -8,6 +8,6 @@ void UStorageDetailsWidget::CloseDetailsWidget()
 {
 	if (targetStorage != nullptr)
 	{
-		targetStorage->targetPlayer->DisengageObject();
+		targetStorage->OnDisengageObject(targetStorage->targetPlayer);
 	}
 }
