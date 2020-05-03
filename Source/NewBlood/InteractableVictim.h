@@ -17,6 +17,7 @@ class NEWBLOOD_API AInteractableVictim : public AInteractableObject
 public:
 	// Sets default values for this actor's properties
 	AInteractableVictim();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,15 +35,16 @@ public:
 	virtual void ClientDisengageBehaviour(APawn* interactingPlayer) override;
 	virtual void ServerDisengageBehaviour(APawn* interactingPlayer) override;
 
+	// Weapon Details
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		FString victimName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		FString victimMurderMethod;
+
 private:
 	UPROPERTY(EditAnywhere)
 		class USkeletalMeshComponent* victimMesh;
 
-	// Weapon Details
-	UPROPERTY(EditAnywhere)
-		FString victimName;
-	UPROPERTY(EditAnywhere)
-		FString victimMurderMethod;
 
 	// Weapon Details UI
 	class UVictimDetailsWidget* detailsWidgetInstance;

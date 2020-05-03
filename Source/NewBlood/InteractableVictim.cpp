@@ -20,6 +20,15 @@ AInteractableVictim::AInteractableVictim()
 	this->victimMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 }
 
+
+void AInteractableVictim::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AInteractableVictim, canInteract);
+	DOREPLIFETIME(AInteractableVictim, victimName);
+	DOREPLIFETIME(AInteractableVictim, victimMurderMethod);
+}
+
+
 // Called when the game starts or when spawned
 void AInteractableVictim::BeginPlay()
 {
