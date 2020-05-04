@@ -84,6 +84,14 @@ public:
 		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
 	void SetPlayerControlMode(bool canMove);
 
+	// Player Character
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		 FString characterName;
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+		void SetCharacterName(const FString& newName);
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ReplicateCharacterName(const FString& newName);
+
 	// Interaction - Engagement
 	AInteractableObject* interactingObject;
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -105,4 +113,6 @@ public:
 	class UPlayerInventoryWidget* inventoryWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerInventoryWidget> inventoryWidgetBP;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> roleWidgetBP;
 };

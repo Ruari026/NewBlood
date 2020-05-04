@@ -20,6 +20,14 @@ AInteractableDetective::AInteractableDetective()
 	this->detectiveMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 }
 
+void AInteractableDetective::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AInteractableDetective, canInteract);
+	DOREPLIFETIME(AInteractableDetective, murderWeapon);
+	DOREPLIFETIME(AInteractableDetective, pickedMurderer);
+	DOREPLIFETIME(AInteractableDetective, allCharacters);
+}
+
 // Called when the game starts or when spawned
 void AInteractableDetective::BeginPlay()
 {

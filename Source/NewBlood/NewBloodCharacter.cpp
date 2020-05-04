@@ -55,6 +55,12 @@ ANewBloodCharacter::ANewBloodCharacter()
 	canInteract = true;
 }
 
+/*void ANewBloodCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(ANewBloodCharacter, characterName);
+}*/
+
+
 void ANewBloodCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -244,6 +250,32 @@ void ANewBloodCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+
+/*
+====================================================================================================
+Player Character
+====================================================================================================
+*/
+void ANewBloodCharacter::SetCharacterName_Implementation(const FString& newName)
+{
+	this->characterName = newName;
+	ReplicateCharacterName(newName);
+}
+
+bool ANewBloodCharacter::SetCharacterName_Validate(const FString& newName)
+{
+	return true;
+}
+
+void ANewBloodCharacter::ReplicateCharacterName_Implementation(const FString& newName)
+{
+	this->characterName = newName;
+}
+
+bool ANewBloodCharacter::ReplicateCharacterName_Validate(const FString& newName)
+{
+	return true;
+}
 
 /*
 ====================================================================================================
