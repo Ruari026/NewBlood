@@ -277,6 +277,40 @@ bool ANewBloodCharacter::ReplicateCharacterName_Validate(const FString& newName)
 	return true;
 }
 
+void ANewBloodCharacter::ShowCharacterRole_Implementation(bool isMurderer)
+{
+	if (IsLocallyControlled())
+	{
+		if (isMurderer)
+		{
+			if (murdererRoleWidgetBP != nullptr)
+			{
+				UUserWidget* mRoleWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), murdererRoleWidgetBP);
+				if (mRoleWidgetInstance != nullptr)
+				{
+					mRoleWidgetInstance->AddToViewport();
+				}
+			}
+		}
+		else
+		{
+			if (innocentRoleWidgetBP != nullptr)
+			{
+				UUserWidget* iRoleWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), innocentRoleWidgetBP);
+				if (iRoleWidgetInstance != nullptr)
+				{
+					iRoleWidgetInstance->AddToViewport();
+				}
+			}
+		}
+	}
+}
+
+bool ANewBloodCharacter::ShowCharacterRole_Validate(bool isMurderer)
+{
+	return true;
+}
+
 /*
 ====================================================================================================
 Interaction

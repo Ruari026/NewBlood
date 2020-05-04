@@ -91,6 +91,8 @@ public:
 		void SetCharacterName(const FString& newName);
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 		void ReplicateCharacterName(const FString& newName);
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)
+		void ShowCharacterRole(bool isMurderer);
 
 	// Interaction - Engagement
 	AInteractableObject* interactingObject;
@@ -114,5 +116,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerInventoryWidget> inventoryWidgetBP;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
-		TSubclassOf<UUserWidget> roleWidgetBP;
+		TSubclassOf<UUserWidget> innocentRoleWidgetBP;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> murdererRoleWidgetBP;
 };
