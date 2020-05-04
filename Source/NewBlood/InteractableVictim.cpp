@@ -20,6 +20,15 @@ AInteractableVictim::AInteractableVictim()
 	this->victimMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 }
 
+
+void AInteractableVictim::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AInteractableVictim, canInteract);
+	DOREPLIFETIME(AInteractableVictim, victimName);
+	DOREPLIFETIME(AInteractableVictim, victimMurderMethod);
+}
+
+
 // Called when the game starts or when spawned
 void AInteractableVictim::BeginPlay()
 {
@@ -35,12 +44,14 @@ void AInteractableVictim::Tick(float DeltaTime)
 
 /*
 ====================================================================================================
-Interaction Behaviour
+Interaction Behaviour - Engagement
 ====================================================================================================
 */
-void AInteractableVictim::OnEngage(APawn* interactingPlayer)
+void AInteractableVictim::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnEngage(interactingPlayer);
+	Super::ClientEngageBehaviour(interactingPlayer);
+
+	UE_LOG(LogTemp, Warning, TEXT("Object Is An Victim Object"));
 
 	// Disables Player Movement & Enables UI Interaction
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
@@ -69,9 +80,21 @@ void AInteractableVictim::OnEngage(APawn* interactingPlayer)
 	}
 }
 
-void AInteractableVictim::OnDisengage(APawn* interactingPlayer)
+void AInteractableVictim::ServerEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnDisengage(interactingPlayer);
+	Super::ServerEngageBehaviour(interactingPlayer);
+}
+
+
+
+/*
+====================================================================================================
+Interaction Behaviour - Disengagement
+====================================================================================================
+*/
+void AInteractableVictim::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ClientDisengageBehaviour(interactingPlayer);
 
 	// Removes Weapon Details UI
 	if (detailsWidgetInstance != nullptr)
@@ -85,4 +108,9 @@ void AInteractableVictim::OnDisengage(APawn* interactingPlayer)
 	{
 		playerCharacter->SetPlayerControlMode(true);
 	}
+}
+
+void AInteractableVictim::ServerDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ServerDisengageBehaviour(interactingPlayer);
 }

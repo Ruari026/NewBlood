@@ -14,7 +14,9 @@
 
 #include "GameFramework/Actor.h"
 #include "InteractableObject.h"
+#include "PlayerInventory.h"
 #include "PlayerCrosshairsWidget.h"
+#include "PlayerInventoryWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -45,8 +47,19 @@ ANewBloodCharacter::ANewBloodCharacter()
 	Mesh1P->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
 	Mesh1P->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
 
+	playerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("PlayerInventory"));
+	if (playerInventory == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ERROR"));
+	}
 	canInteract = true;
 }
+
+/*void ANewBloodCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(ANewBloodCharacter, characterName);
+}*/
+
 
 void ANewBloodCharacter::BeginPlay()
 {
@@ -60,6 +73,19 @@ void ANewBloodCharacter::BeginPlay()
 		if (crosshairsWidgetInstance != nullptr)
 		{
 			crosshairsWidgetInstance->AddToViewport();
+		}
+	}
+
+	if (inventoryWidgetBP != nullptr)
+	{
+		if (IsLocallyControlled())
+		{
+			inventoryWidgetInstance = CreateWidget<UPlayerInventoryWidget>(GetWorld(), inventoryWidgetBP);
+			if (inventoryWidgetInstance != nullptr)
+			{
+				inventoryWidgetInstance->AddToViewport();
+				inventoryWidgetInstance->targetInventory = this->playerInventory;
+			}
 		}
 	}
 }
@@ -87,7 +113,15 @@ void ANewBloodCharacter::Tick(float DeltaTime)
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
-				crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+				// TODO: Show that a player is already interacting with the object
+				if (hitInteractable->GetCanInteract())
+				{
+					crosshairsWidgetInstance->ShowInteractionOpportunity(true);
+				}
+				else
+				{
+					crosshairsWidgetInstance->ShowInteractionOpportunity(false);
+				}
 			}
 			else
 			{
@@ -131,6 +165,11 @@ void ANewBloodCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("TurnRate", this, &ANewBloodCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ANewBloodCharacter::LookUpAtRate);
+
+	// Inventory Controls
+	//PlayerInputComponent->BindAction("ScrollLeft", IE_Pressed, this, &ANewBloodCharacter::playerInventory->DecreaseSelectedItem);
+	//PlayerInputComponent->BindAction("ScrollRight", IE_Pressed, this, &ANewBloodCharacter::playerInventory->IncreaseSelectedItem);
+
 }
 
 void ANewBloodCharacter::SetPlayerControlMode(bool canMove)
@@ -214,6 +253,66 @@ void ANewBloodCharacter::LookUpAtRate(float Rate)
 
 /*
 ====================================================================================================
+Player Character
+====================================================================================================
+*/
+void ANewBloodCharacter::SetCharacterName_Implementation(const FString& newName)
+{
+	this->characterName = newName;
+	ReplicateCharacterName(newName);
+}
+
+bool ANewBloodCharacter::SetCharacterName_Validate(const FString& newName)
+{
+	return true;
+}
+
+void ANewBloodCharacter::ReplicateCharacterName_Implementation(const FString& newName)
+{
+	this->characterName = newName;
+}
+
+bool ANewBloodCharacter::ReplicateCharacterName_Validate(const FString& newName)
+{
+	return true;
+}
+
+void ANewBloodCharacter::ShowCharacterRole_Implementation(bool isMurderer)
+{
+	if (IsLocallyControlled())
+	{
+		if (isMurderer)
+		{
+			if (murdererRoleWidgetBP != nullptr)
+			{
+				UUserWidget* mRoleWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), murdererRoleWidgetBP);
+				if (mRoleWidgetInstance != nullptr)
+				{
+					mRoleWidgetInstance->AddToViewport();
+				}
+			}
+		}
+		else
+		{
+			if (innocentRoleWidgetBP != nullptr)
+			{
+				UUserWidget* iRoleWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), innocentRoleWidgetBP);
+				if (iRoleWidgetInstance != nullptr)
+				{
+					iRoleWidgetInstance->AddToViewport();
+				}
+			}
+		}
+	}
+}
+
+bool ANewBloodCharacter::ShowCharacterRole_Validate(bool isMurderer)
+{
+	return true;
+}
+
+/*
+====================================================================================================
 Interaction
 ====================================================================================================
 */
@@ -239,11 +338,71 @@ void ANewBloodCharacter::TryInteract()
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
-				// Interacts with that object
-				hitInteractable->OnInteract(this);
+				if (hitInteractable->GetCanInteract())
+				{
+					EngageObject(hitInteractable);
+				}
 			}
 		}
 	}
 }
 
+void ANewBloodCharacter::SetInteractingObject_Implementation(AInteractableObject* interactingObject)
+{
+	this->interactingObject = interactingObject;
+}
 
+bool ANewBloodCharacter::SetInteractingObject_Validate(AInteractableObject* interactingObject)
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+Interaction Engagement
+====================================================================================================
+*/
+void ANewBloodCharacter::EngageObject(AInteractableObject* objectToInteract)
+{
+	this->interactingObject = objectToInteract;
+	SetInteractingObject(objectToInteract);
+
+	ChangeObjectOwner();
+
+	ClientEngageObject();
+	ServerEngageObject();
+}
+
+void ANewBloodCharacter::ClientEngageObject()
+{
+	interactingObject->ClientEngageBehaviour(this);
+}
+
+void ANewBloodCharacter::ServerEngageObject_Implementation()
+{
+	APawn* interactingPlayer = this;
+	interactingObject->ServerEngageBehaviour(interactingPlayer);
+}
+
+bool ANewBloodCharacter::ServerEngageObject_Validate()
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+Testing
+====================================================================================================
+*/
+void ANewBloodCharacter::ChangeObjectOwner_Implementation()
+{
+	AActor* newOwner = this;
+	interactingObject->SetObjectOwner(newOwner);
+}
+
+bool ANewBloodCharacter::ChangeObjectOwner_Validate()
+{
+	return true;
+}

@@ -2,12 +2,13 @@
 
 
 #include "VictimDetailsWidget.h"
+#include "NewBloodCharacter.h"
 
 
 void UVictimDetailsWidget::CloseDetailsWidget()
 {
 	if (targetVictim != nullptr)
 	{
-		targetVictim->OnDisengage(GetOwningPlayerPawn());
+		targetVictim->OnDisengageObject(targetVictim->targetPlayer);
 	}
 }

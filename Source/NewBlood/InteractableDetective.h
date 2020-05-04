@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "InteractableObject.h"
+#include "InteractableWeapon.h"
+#include "NewBloodCharacter.h"
 #include "InteractableDetective.generated.h"
 
 /**
@@ -17,6 +19,8 @@ class NEWBLOOD_API AInteractableDetective : public AInteractableObject
 public:
 	// Sets default values for this actor's properties
 	AInteractableDetective();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,8 +31,26 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Inherited Interaction Behaviour
-	virtual void OnEngage(APawn* interactingPlayer) override;
-	virtual void OnDisengage(APawn* interactingPlayer) override;
+	// Handling Multiplayer Behaviour - Engagement
+	virtual void ClientEngageBehaviour(APawn* interactingPlayer) override;
+	virtual void ServerEngageBehaviour(APawn* interactingPlayer) override;
+	// Handling Multiplayer Behaviour - Disengagement
+	virtual void ClientDisengageBehaviour(APawn* interactingPlayer) override;
+	virtual void ServerDisengageBehaviour(APawn* interactingPlayer) override;
+
+	// Murder Weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		AInteractableWeapon* murderWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AInteractableWeapon* submittedWeapon;
+
+	// Murder Culprit
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		ANewBloodCharacter* pickedMurderer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+		TArray<ANewBloodCharacter*> allCharacters;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		ANewBloodCharacter* submittedMurderer;
 
 private:
 	UPROPERTY(EditAnywhere)

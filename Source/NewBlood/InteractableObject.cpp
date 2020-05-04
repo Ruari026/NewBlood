@@ -2,6 +2,9 @@
 
 
 #include "InteractableObject.h"
+#include "NewBloodCharacter.h"
+#include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AInteractableObject::AInteractableObject()
@@ -10,6 +13,12 @@ AInteractableObject::AInteractableObject()
 	PrimaryActorTick.bCanEverTick = true;
 
 	canInteract = true;
+	bReplicates = true;
+}
+
+void AInteractableObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AInteractableObject, canInteract);
 }
 
 
@@ -18,51 +27,64 @@ AInteractableObject::AInteractableObject()
 Interaction Details
 ====================================================================================================
 */
-void AInteractableObject::OnInteract(APawn* interactingPlayer)
+bool AInteractableObject::GetCanInteract()
 {
-	if (canInteract)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Is Interacting With: %s"), *this->GetName());
-		this->OnEngage(interactingPlayer);
-	}
-}
-
-void AInteractableObject::OnEngage(APawn* interactingPlayer)
-{
-	if (Role == ROLE_Authority)
-	{
-		ServerSetCanInteract(false);
-	}
-	else
-	{
-		ClientSetCanInteract(false);
-	}
-}
-
-void AInteractableObject::OnDisengage(APawn* interactingPlayer)
-{
-	if (Role == ROLE_Authority)
-	{
-		ServerSetCanInteract(true);
-	}
-	else
-	{
-		ClientSetCanInteract(true);
-	}
+	return this->canInteract;
 }
 
 
 /*
 ====================================================================================================
-SERVER ONLY - Interaction Details
+On Interaction Details
 ====================================================================================================
 */
-void AInteractableObject::ServerSetCanInteract_Implementation(bool newCanInteract)
+void AInteractableObject::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	canInteract = newCanInteract;
+	UE_LOG(LogTemp, Warning, TEXT("Client: Engage"));
+
+	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
+	if (playerCharacter != nullptr)
+	{
+		targetPlayer = playerCharacter;
+	}
+
+	ObjectOwnerTest();
 }
 
-bool AInteractableObject::ServerSetCanInteract_Validate(bool newCanInteract)
+void AInteractableObject::ServerEngageBehaviour(APawn* interactingPlayer)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server: Engage"));
+
+	this->canInteract = false;
+}
+
+
+/*
+====================================================================================================
+On Disengage Details
+====================================================================================================
+*/
+void AInteractableObject::OnDisengageObject(APawn* interactingPlayer)
+{
+	ClientDisengageBehaviour(interactingPlayer);
+	ServerDisengageBehaviour(interactingPlayer);
+}
+
+void AInteractableObject::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Client: Disengage"));
+
+	targetPlayer = nullptr;
+}
+
+void AInteractableObject::ServerDisengageBehaviour_Implementation(APawn* interactingPlayer)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server: Disengage"));
+
+	this->canInteract = true;
+}
+
+bool AInteractableObject::ServerDisengageBehaviour_Validate(APawn* interactingPlayer)
 {
 	return true;
 }
@@ -70,15 +92,52 @@ bool AInteractableObject::ServerSetCanInteract_Validate(bool newCanInteract)
 
 /*
 ====================================================================================================
-CLIENT ONLY - Interaction Details
+Testing
 ====================================================================================================
 */
-void AInteractableObject::ClientSetCanInteract_Implementation(bool newCanInteract)
+void AInteractableObject::SetObjectOwner_Implementation(AActor* newOwner)
 {
-	canInteract = newCanInteract;
+	this->SetOwner(newOwner);
 }
 
-bool AInteractableObject::ClientSetCanInteract_Validate(bool newCanInteract)
+bool AInteractableObject::SetObjectOwner_Validate(AActor* newOwner)
+{
+	return true;
+}
+
+void AInteractableObject::ObjectOwnerTest_Implementation()
+{
+	this->canInteract = false;
+}
+
+bool AInteractableObject::ObjectOwnerTest_Validate()
+{
+	return true;
+}
+
+
+/*
+====================================================================================================
+Utility
+====================================================================================================
+*/
+void AInteractableObject::RemoveObjectFromWorld_Implementation()
+{
+	RemoveObjectFromAll();
+}
+
+bool AInteractableObject::RemoveObjectFromWorld_Validate()
+{
+	return true;
+}
+
+void AInteractableObject::RemoveObjectFromAll_Implementation()
+{
+	this->SetActorScale3D(FVector::ZeroVector);
+	//this->Destroy(true, false);
+}
+
+bool AInteractableObject::RemoveObjectFromAll_Validate()
 {
 	return true;
 }

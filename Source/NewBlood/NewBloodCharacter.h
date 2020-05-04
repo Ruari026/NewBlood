@@ -78,8 +78,45 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	// Crosshairs
 	class UPlayerCrosshairsWidget* crosshairsWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
 	void SetPlayerControlMode(bool canMove);
+
+	// Player Character
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		 FString characterName;
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+		void SetCharacterName(const FString& newName);
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ReplicateCharacterName(const FString& newName);
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)
+		void ShowCharacterRole(bool isMurderer);
+
+	// Interaction - Engagement
+	AInteractableObject* interactingObject;
+	UFUNCTION(Server, Reliable, WithValidation)
+		void SetInteractingObject(AInteractableObject* interactingObject);
+	UFUNCTION()
+		void EngageObject(AInteractableObject* objectToInteract);
+	UFUNCTION()
+		void ClientEngageObject();
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerEngageObject();
+
+	// RPC Testing
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ChangeObjectOwner();
+
+	// Inventory Management
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		class UPlayerInventory* playerInventory;
+	class UPlayerInventoryWidget* inventoryWidgetInstance;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UPlayerInventoryWidget> inventoryWidgetBP;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> innocentRoleWidgetBP;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> murdererRoleWidgetBP;
 };

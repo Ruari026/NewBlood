@@ -2,11 +2,12 @@
 
 
 #include "DetectiveDetailsWidget.h"
+#include "NewBloodCharacter.h"
 
 void UDetectiveDetailsWidget::CloseDetailsWidget()
 {
 	if (targetDetective != nullptr)
 	{
-		targetDetective->OnDisengage(GetOwningPlayerPawn());
+		targetDetective->OnDisengageObject(targetDetective->targetPlayer);
 	}
 }

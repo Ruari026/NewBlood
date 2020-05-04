@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UnrealNetwork.h"
 #include "InteractableObject.generated.h"
 
 UCLASS()
@@ -14,17 +15,41 @@ class NEWBLOOD_API AInteractableObject : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AInteractableObject();
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const;
 
-	void OnInteract(APawn* interactingPlayer);
+	// Interaction Handling
+	bool GetCanInteract();
 
-	virtual void OnEngage(APawn* interactingPlayer);
-	virtual void OnDisengage(APawn* interactingPlayer);
+	UPROPERTY(BlueprintReadWrite)
+		class ANewBloodCharacter* targetPlayer;
+
+	// Handling Multiplayer Behaviour - Engagement
+	virtual void ClientEngageBehaviour(APawn* interactingPlayer);
+	virtual void ServerEngageBehaviour(APawn* interactingPlayer);
+
+
+	// Handling Multiplayer Behaviour - Disengagement
+	void OnDisengageObject(APawn* interactingPlayer);
+	UFUNCTION()
+		virtual void ClientDisengageBehaviour(APawn* interactingPlayer);
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void ServerDisengageBehaviour(APawn* interactingPlayer);
+
+	// RPC Testing
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void SetObjectOwner(AActor* newOwner);
+	// RPC Testing
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ObjectOwnerTest();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// Preventing Multiple players from interacting with the same item
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool canInteract;
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
-		void ServerSetCanInteract(bool newCanInteract);
+
+
 	UFUNCTION(Server, Reliable, WithValidation)
-		void ClientSetCanInteract(bool newCanInteract);
+		void RemoveObjectFromWorld(); 
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void RemoveObjectFromAll();
 };

@@ -35,12 +35,14 @@ void AInteractableWeapon::Tick(float DeltaTime)
 
 /*
 ====================================================================================================
-Interaction Behaviour
+Interaction Behaviour - Engagement
 ====================================================================================================
 */
-void AInteractableWeapon::OnEngage(APawn* interactingPlayer)
+void AInteractableWeapon::ClientEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnEngage(interactingPlayer);
+	Super::ClientEngageBehaviour(interactingPlayer);
+
+	UE_LOG(LogTemp, Warning, TEXT("Object Is A Weapon Object"));
 
 	// Disables Player Movement & Enables UI Interaction
 	ANewBloodCharacter* playerCharacter = Cast<ANewBloodCharacter>(interactingPlayer);
@@ -60,7 +62,6 @@ void AInteractableWeapon::OnEngage(APawn* interactingPlayer)
 			{
 				// Setting the UI to show this specific weapon's information
 				detailsWidgetInstance->targetWeapon = this;
-				detailsWidgetInstance->SetWidgetDetails(this->weaponName, this->weaponDamageType);
 
 				// Showing UI to player
 				detailsWidgetInstance->AddToViewport();
@@ -69,9 +70,20 @@ void AInteractableWeapon::OnEngage(APawn* interactingPlayer)
 	}
 }
 
-void AInteractableWeapon::OnDisengage(APawn* interactingPlayer)
+void AInteractableWeapon::ServerEngageBehaviour(APawn* interactingPlayer)
 {
-	Super::OnDisengage(interactingPlayer);
+	Super::ServerEngageBehaviour(interactingPlayer);
+}
+
+
+/*
+====================================================================================================
+Interaction Behaviour - Disengagement
+====================================================================================================
+*/
+void AInteractableWeapon::ClientDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ClientDisengageBehaviour(interactingPlayer);
 
 	// Removes Weapon Details UI
 	if (detailsWidgetInstance != nullptr)
@@ -85,4 +97,9 @@ void AInteractableWeapon::OnDisengage(APawn* interactingPlayer)
 	{
 		playerCharacter->SetPlayerControlMode(true);
 	}
+}
+
+void AInteractableWeapon::ServerDisengageBehaviour(APawn* interactingPlayer)
+{
+	Super::ServerDisengageBehaviour(interactingPlayer);
 }
