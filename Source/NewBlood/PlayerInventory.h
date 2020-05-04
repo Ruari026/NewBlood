@@ -41,6 +41,8 @@ public:
 		bool AddItemToInventory(APickupableObject* itemToAdd);
 	UFUNCTION(BlueprintCallable)
 		void RemoveItemFromInventory(int slotToRemoveFrom);
+	UFUNCTION(BlueprintCallable)
+		void RemoveObjectFromInventory(APickupableObject* objectToRemove);
 
 	// Getters
 	UFUNCTION(BlueprintCallable)
@@ -49,6 +51,8 @@ public:
 		int GetSelectedItemNumber();
 	UFUNCTION(BlueprintCallable)
 		APickupableObject* GetSelectedItemObject();
+	UFUNCTION(BlueprintCallable)
+		APickupableObject* GetItemObject(FString itemName);
 	UFUNCTION(BlueprintCallable)
 		TArray<APickupableObject*> GetInventoryItems();
 

@@ -151,6 +151,20 @@ void UPlayerInventory::RemoveItemFromInventory(int slotToRemoveFrom)
 	}
 }
 
+void UPlayerInventory::RemoveObjectFromInventory(APickupableObject* objectToRemove)
+{
+	for (int i = 0; i < inventoryItems.Num(); i++)
+	{
+		if (inventoryItems[i] == nullptr)
+		{
+			if (objectToRemove == inventoryItems[i])
+			{
+				inventoryItems[i] = nullptr;
+			}
+		}
+	}
+}
+
 
 /*
 ====================================================================================================
@@ -171,6 +185,23 @@ APickupableObject* UPlayerInventory::GetSelectedItemObject()
 {
 	return inventoryItems[selectedItem];
 }
+
+APickupableObject* UPlayerInventory::GetItemObject(FString itemName)
+{
+	for (int i = 0; i < inventoryItems.Num(); i++)
+	{
+		if (inventoryItems[i] == nullptr)
+		{
+			if (itemName == inventoryItems[i]->GetObjectName())
+			{
+				return inventoryItems[i];
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 
 TArray<APickupableObject*> UPlayerInventory::GetInventoryItems()
 {

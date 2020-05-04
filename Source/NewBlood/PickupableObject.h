@@ -28,6 +28,9 @@ public:
 
 	void AddToPlayerInventory();
 
+	// Getters
+	FString GetObjectName();
+
 protected:
 	// Inventory Details
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup Details")

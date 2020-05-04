@@ -332,12 +332,11 @@ void ANewBloodCharacter::TryInteract()
 		FCollisionQueryParams collisionParams;
 		if (GetWorld()->LineTraceSingleByChannel(hitObject, startFire, endFire, ECC_PhysicsBody, collisionParams))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Player Is Looking At: %s"), *hitObject.GetActor()->GetName());
-
 			// Checks if the hit object is an interactable object
 			AInteractableObject* hitInteractable = Cast<AInteractableObject>(hitObject.GetActor());
 			if (hitInteractable != nullptr)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Player Is Looking At: %s"), *hitObject.GetActor()->GetName());
 				if (hitInteractable->GetCanInteract())
 				{
 					EngageObject(hitInteractable);
