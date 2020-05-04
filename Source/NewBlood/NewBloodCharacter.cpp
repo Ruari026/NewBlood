@@ -55,6 +55,12 @@ ANewBloodCharacter::ANewBloodCharacter()
 	canInteract = true;
 }
 
+/*void ANewBloodCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(ANewBloodCharacter, characterName);
+}*/
+
+
 void ANewBloodCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -247,6 +253,66 @@ void ANewBloodCharacter::LookUpAtRate(float Rate)
 
 /*
 ====================================================================================================
+Player Character
+====================================================================================================
+*/
+void ANewBloodCharacter::SetCharacterName_Implementation(const FString& newName)
+{
+	this->characterName = newName;
+	ReplicateCharacterName(newName);
+}
+
+bool ANewBloodCharacter::SetCharacterName_Validate(const FString& newName)
+{
+	return true;
+}
+
+void ANewBloodCharacter::ReplicateCharacterName_Implementation(const FString& newName)
+{
+	this->characterName = newName;
+}
+
+bool ANewBloodCharacter::ReplicateCharacterName_Validate(const FString& newName)
+{
+	return true;
+}
+
+void ANewBloodCharacter::ShowCharacterRole_Implementation(bool isMurderer)
+{
+	if (IsLocallyControlled())
+	{
+		if (isMurderer)
+		{
+			if (murdererRoleWidgetBP != nullptr)
+			{
+				UUserWidget* mRoleWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), murdererRoleWidgetBP);
+				if (mRoleWidgetInstance != nullptr)
+				{
+					mRoleWidgetInstance->AddToViewport();
+				}
+			}
+		}
+		else
+		{
+			if (innocentRoleWidgetBP != nullptr)
+			{
+				UUserWidget* iRoleWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), innocentRoleWidgetBP);
+				if (iRoleWidgetInstance != nullptr)
+				{
+					iRoleWidgetInstance->AddToViewport();
+				}
+			}
+		}
+	}
+}
+
+bool ANewBloodCharacter::ShowCharacterRole_Validate(bool isMurderer)
+{
+	return true;
+}
+
+/*
+====================================================================================================
 Interaction
 ====================================================================================================
 */
@@ -302,6 +368,8 @@ void ANewBloodCharacter::EngageObject(AInteractableObject* objectToInteract)
 	this->interactingObject = objectToInteract;
 	SetInteractingObject(objectToInteract);
 
+	ChangeObjectOwner();
+
 	ClientEngageObject();
 	ServerEngageObject();
 }
@@ -325,29 +393,16 @@ bool ANewBloodCharacter::ServerEngageObject_Validate()
 
 /*
 ====================================================================================================
-Interaction Disengagement
+Testing
 ====================================================================================================
 */
-void ANewBloodCharacter::DisengageObject()
+void ANewBloodCharacter::ChangeObjectOwner_Implementation()
 {
-	ClientDisengageObject();
-	ServerDisengageObject();
-
-	this->interactingObject = nullptr;
-	SetInteractingObject(nullptr);
+	AActor* newOwner = this;
+	interactingObject->SetObjectOwner(newOwner);
 }
 
-void ANewBloodCharacter::ClientDisengageObject()
-{
-	interactingObject->ClientDisengageBehaviour(this);
-}
-
-void ANewBloodCharacter::ServerDisengageObject_Implementation()
-{
-	interactingObject->ServerDisengageBehaviour(this);
-}
-
-bool ANewBloodCharacter::ServerDisengageObject_Validate()
+bool ANewBloodCharacter::ChangeObjectOwner_Validate()
 {
 	return true;
 }

@@ -35,6 +35,12 @@ public:
 	virtual void ClientDisengageBehaviour(APawn* interactingPlayer) override;
 	virtual void ServerDisengageBehaviour(APawn* interactingPlayer) override;
 
+	// Weapon Details
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FString weaponName;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FString damageType;
+
 private:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* weaponMesh;

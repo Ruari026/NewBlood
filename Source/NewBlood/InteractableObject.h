@@ -29,11 +29,27 @@ public:
 
 
 	// Handling Multiplayer Behaviour - Disengagement
-	virtual void ClientDisengageBehaviour(APawn* interactingPlayer);
-	virtual void ServerDisengageBehaviour(APawn* interactingPlayer);
+	void OnDisengageObject(APawn* interactingPlayer);
+	UFUNCTION()
+		virtual void ClientDisengageBehaviour(APawn* interactingPlayer);
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void ServerDisengageBehaviour(APawn* interactingPlayer);
+
+	// RPC Testing
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void SetObjectOwner(AActor* newOwner);
+	// RPC Testing
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ObjectOwnerTest();
 
 protected:
 	// Preventing Multiple players from interacting with the same item
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 		bool canInteract;
+
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void RemoveObjectFromWorld(); 
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void RemoveObjectFromAll();
 };

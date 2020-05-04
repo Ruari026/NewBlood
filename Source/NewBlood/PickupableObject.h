@@ -26,7 +26,6 @@ public:
 	virtual void ClientDisengageBehaviour(APawn* interactingPlayer) override;
 	virtual void ServerDisengageBehaviour(APawn* interactingPlayer) override;
 
-
 	void AddToPlayerInventory();
 
 protected:
@@ -35,7 +34,6 @@ protected:
 		FString inventoryName;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup Details")
 		UTexture2D* inventoryIcon;
-
 
 private:
 	// Pickup UI

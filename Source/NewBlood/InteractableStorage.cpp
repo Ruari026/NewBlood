@@ -3,6 +3,7 @@
 
 #include "InteractableStorage.h"
 #include "NewBloodCharacter.h"
+#include "PlayerInventory.h"
 #include "StorageDetailsWidget.h"
 
 AInteractableStorage::AInteractableStorage()
@@ -21,6 +22,12 @@ void AInteractableStorage::BeginPlay()
 void AInteractableStorage::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AInteractableStorage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AInteractableStorage, canInteract);
+	DOREPLIFETIME(AInteractableStorage, storedObject);
 }
 
 
@@ -95,4 +102,26 @@ void AInteractableStorage::ClientDisengageBehaviour(APawn* interactingPlayer)
 void AInteractableStorage::ServerDisengageBehaviour(APawn* interactingPlayer)
 {
 	Super::ServerDisengageBehaviour(interactingPlayer);
+}
+
+
+/*
+====================================================================================================
+Storage
+====================================================================================================
+*/
+void AInteractableStorage::AddObjectToStorage(APickupableObject* objectToStore)
+{
+	// Storing the object on the server
+	ServerStore(objectToStore);
+}
+
+void AInteractableStorage::ServerStore_Implementation(APickupableObject* objectToStore)
+{
+	this->storedObject = objectToStore;
+}
+
+bool AInteractableStorage::ServerStore_Validate(APickupableObject* objectToStore)
+{
+	return true;
 }

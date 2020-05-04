@@ -14,6 +14,8 @@ class NEWBLOOD_API AMurderManager : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMurderManager();
+	// Singleton Design Pattern
+	static AMurderManager* GetInstance();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,5 +24,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	static AMurderManager* instance;
+
+	// Handling Level Murder
+
+	// Storing Player Information
 
 };

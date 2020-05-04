@@ -2,6 +2,7 @@
 
 
 #include "MurderManager.h"
+AMurderManager* AMurderManager::instance = nullptr;
 
 // Sets default values
 AMurderManager::AMurderManager()
@@ -11,11 +12,25 @@ AMurderManager::AMurderManager()
 
 }
 
+// Singleton Design Pattern
+AMurderManager* AMurderManager::GetInstance()
+{
+	return instance;
+}
+
 // Called when the game starts or when spawned
 void AMurderManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (instance == nullptr)
+	{
+		instance = this;
+	}
+	else
+	{
+		Destroy();
+	}
 }
 
 // Called every frame
@@ -24,4 +39,3 @@ void AMurderManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

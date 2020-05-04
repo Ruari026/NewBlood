@@ -84,6 +84,16 @@ public:
 		TSubclassOf<UPlayerCrosshairsWidget> crosshairsWidgetBP;
 	void SetPlayerControlMode(bool canMove);
 
+	// Player Character
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		 FString characterName;
+	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+		void SetCharacterName(const FString& newName);
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void ReplicateCharacterName(const FString& newName);
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, WithValidation)
+		void ShowCharacterRole(bool isMurderer);
+
 	// Interaction - Engagement
 	AInteractableObject* interactingObject;
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -93,16 +103,11 @@ public:
 	UFUNCTION()
 		void ClientEngageObject();
 	UFUNCTION(Server, Reliable, WithValidation)
-		void ServerEngageObject(); 
+		void ServerEngageObject();
 
-	// Interaction - Disengagment
-	UFUNCTION()
-		void DisengageObject();
-	UFUNCTION()
-		void ClientDisengageObject();
+	// RPC Testing
 	UFUNCTION(Server, Reliable, WithValidation)
-		void ServerDisengageObject();
-
+		void ChangeObjectOwner();
 
 	// Inventory Management
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -110,4 +115,8 @@ public:
 	class UPlayerInventoryWidget* inventoryWidgetInstance;
 	UPROPERTY(EditAnywhere, Category = "Widgets")
 		TSubclassOf<UPlayerInventoryWidget> inventoryWidgetBP;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> innocentRoleWidgetBP;
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<UUserWidget> murdererRoleWidgetBP;
 };
